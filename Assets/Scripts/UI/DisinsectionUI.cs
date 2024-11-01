@@ -90,6 +90,39 @@ namespace AniYa.UI
                 var pu = punits[i];
                 pu.PlayShakeRotate();
             }
+            RefreshInfo();
+
+            StopCoroutine("CorShowTalk");
+            StartCoroutine("CorShowTalk");
+        }
+
+
+        private IEnumerator CorShowTalk()
+        {
+            ScreenUI.PlayRoleAnimation();
+            var talkText = "天民田园通过生物防治或物理防治方式除草除虫，除草除虫是农业管理中非常重要的一环，想要提高产量，就一定要及时除草除虫";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？现代农业常用的除草手段有物理除草，化学除草和生物除草";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？杂草往往拥有比农作物更强的生命力，会和农作物争夺土壤养分及太阳光照";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？除虫需要依据害虫种类、数量、生活习性等因素选择合适的除虫方法，做到科学、有效地控制害虫数量";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？很多害虫都有趋光性，诱虫灯就是利用这个特点来做到诱杀害虫并且生态友好的哦";
+            GameManager.Instance.ShowTalk(talkText);
+
         }
 
         public void OnClickDisinsect()
@@ -180,6 +213,7 @@ namespace AniYa.UI
             if (pd.insectCnt <= 0)
             {
                 GameManager.Instance.ClearUnitInsect(index);
+                GameManager.Instance.plantUnits[index].PlayStarEffect();
             }
 
             isPlayingAnimation = false;
@@ -196,9 +230,60 @@ namespace AniYa.UI
             if (pd.weedCnt <= 0)
             {
                 GameManager.Instance.ClearUnitWeed(index);
+                GameManager.Instance.plantUnits[index].PlayStarEffect();
             }
 
             isPlayingAnimation = false;
+        }
+
+        private string _infoText = @"剩余时间
+
+作物健康度   {0:0.}%
+虫害感染率   {1:0.}%
+杂草侵占度   {2:0.}%
+当前评价    {3}";
+
+        private float _refreshInfoTime;
+
+        private void RefreshInfo()
+        {
+            _refreshInfoTime += Time.deltaTime;
+            if (_refreshInfoTime < 0.1f)
+            {
+                return;
+            }
+            var healthCnt = 0;
+            var insectCnt = 0;
+            var weedCnt = 0;
+            for (int i = 0; i < plantDatas.Length; i++)
+            {
+                var pd = plantDatas[i];
+                if (pd.insectCnt <= 0 && pd.weedCnt <= 0)
+                {
+                    healthCnt++;
+                }
+                if (pd.insectCnt > 0)
+                    insectCnt++;
+                if (pd.weedCnt > 0)
+                    weedCnt++;
+            }
+
+            var healthRate = 100f * healthCnt / plantDatas.Length;
+            var insectRate = 100f * insectCnt / plantDatas.Length;
+            var weedRate = 100f * weedCnt / plantDatas.Length;
+
+            var evaluation = string.Empty;
+            var evaRate = healthRate;
+
+            if (evaRate >= 0.666f)
+                evaluation = "优";
+            else if (evaRate >= 0.333f)
+                evaluation = "良";
+            else
+                evaluation = "差";
+
+            ScreenUI.InfoPanelText.text = string.Format(_infoText,
+                healthRate, insectRate, weedRate, evaluation);
         }
 
         protected override void Update()
@@ -223,6 +308,10 @@ namespace AniYa.UI
                 SelectedWeed.SetActive(CurrOperationType == OperationTypeEnum.Weed);
 
                 playTime -= Time.deltaTime;
+
+                ScreenUI.TimeSlider.value = playTime / totalTime;
+                RefreshInfo();
+
                 timeText.text = $"{playTime:0}秒";
 
                 if (playTime <= 0)
@@ -253,6 +342,9 @@ namespace AniYa.UI
         public override void Finish(bool quit = false)
         {
             base.Finish(quit);
+            StopCoroutine("CorShowTalk");
+            GameManager.Instance.CloseTalk();
+
             if (!quit)
             {
                 var sum = 0f;

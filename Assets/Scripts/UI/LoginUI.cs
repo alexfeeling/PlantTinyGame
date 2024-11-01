@@ -114,7 +114,8 @@ namespace AniYa.UI
                     var serverGameData = JsonConvert.DeserializeObject<GameData>(gameSaveJson);
                     if (serverGameData.playerId == userId)
                     {
-                        var serverGameId = serverGameData.gameId;
+                        GameManager.Instance.UsingGameData = serverGameData;
+                        /*var serverGameId = serverGameData.gameId;
                         var nextGameId = serverGameId + 1;
                         if (nextGameId > 7) nextGameId = 1;
                         var thisGameId = (int)GameManager.Instance.GamePhase + 1;
@@ -127,7 +128,7 @@ namespace AniYa.UI
                             ErrorText.text = str;
                             PlayError();
                             yield break;
-                        }
+                        }*/
                     }
                     else
                     {

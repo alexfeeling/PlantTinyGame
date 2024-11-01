@@ -214,7 +214,7 @@ namespace AniYa.UI
             SelectEnviromentUI.SetActive(false);
             BreedingOperation.SetActive(false);
 
-            plantIdx = 1;
+            plantIdx = 2;
             GameManager.Instance.UsingGameData.plantIndex = plantIdx;
             GameManager.Instance.RefreshUnitPlant(plantIdx);
 

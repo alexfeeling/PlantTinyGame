@@ -7,6 +7,8 @@ using UnityEngine.UI;
 namespace AniYa.UI
 {
 
+    
+
     /// <summary>
     /// 选苗UI
     /// </summary>
@@ -24,7 +26,11 @@ namespace AniYa.UI
 
         public GameObject SelectPlantUI;
 
-        public Image[] SeedlingImgs;
+        public GameObject PlantParentObj;
+
+        public Seedling[] SeedlingObjs;
+
+        //public Image[] SeedlingImgs;
 
         public CanvasGroup ErrorCG;
 
@@ -115,7 +121,7 @@ namespace AniYa.UI
 
             SelectPlantUI.SetActive(true);
 
-            plantIdx = 1;
+            plantIdx = 2;
             GameManager.Instance.UsingGameData.plantIndex = plantIdx;
             GameManager.Instance.RefreshUnitPlant(plantIdx);
         }
@@ -144,8 +150,16 @@ namespace AniYa.UI
 
             playTime = totalTime;
             score = 0;
+            _normalIndex = 0;
             GenerateSeedling();
             //noticeText.gameObject.SetActive(false);
+
+            PlantParentObj.SetActive(true);
+            for (int i = 0; i < SeedlingObjs.Length; i++)
+            {
+                SeedlingObjs[i].gameObject.SetActive(false);
+                SeedlingObjs[i].Refresh();
+            }
 
             var punits = GameManager.Instance.plantUnits;
             for (int i = 0; i < punits.Length; i++)
@@ -154,14 +168,90 @@ namespace AniYa.UI
                 pu.StopShakeRotate();
             }
 
-            for (int i = 0; i < SeedlingImgs.Length; i++)
+            /*for (int i = 0; i < SeedlingImgs.Length; i++)
             {
                 SeedlingImgs[i].gameObject.SetActive(false);
-            }
+            }*/
 
             GameManager.Instance.ShowUnitEmpty();
+
+            StopCoroutine("CorShowTalk");
+            StartCoroutine("CorShowTalk");
         }
 
+
+        private IEnumerator CorShowTalk()
+        {
+            ScreenUI.PlayRoleAnimation();
+            var talkText = "天民田园在自动育苗棚室育苗之后优先选取生长茁壮的种苗，进行选苗是种植作物时非常重要的一步，选用优质的种苗直接影响着作物后期的生长发育和产量。";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "加油，记得选择外形完整，无明显畸形或伤口的种苗哦";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "健康的种苗，会看起来鲜绿丰满，富有生命的活力";
+            GameManager.Instance.ShowTalk(talkText);
+
+        }
+
+        /*
+                private string _infoText = @"剩余时间
+
+        筛查总苗数   {0}
+        优选种苗数   {1}
+        筛查速度    {2}
+        筛查精度    {3}
+        当前评价    {4}";
+
+                private int _operationCorrectCnt;
+                private int _operationTotalCnt;
+                private float _refreshInfoTime;
+
+                private void RefreshInfo()
+                {
+                    _refreshInfoTime += Time.deltaTime;
+                    if (_refreshInfoTime < 0.1f)
+                    {
+                        return;
+                    }
+
+                    var hoedCnt = 0;
+                    var coveredCnt = 0;
+                    for (int i = 0; i < blockDatas.Length; i++)
+                    {
+                        var bd = blockDatas[i];
+                        if (bd.phase >= BlockPhase.Hoed)
+                        {
+                            hoedCnt++;
+                        }
+                        if (bd.phase >= BlockPhase.Coverd)
+                        {
+                            coveredCnt++;
+                        }
+                    }
+
+                    var evaluation = string.Empty;
+                    var evaRate = 0f;
+                    if (_operationTotalCnt <= 0)
+                        evaRate = 0.5f;
+                    else
+                        evaRate = 1f * _operationCorrectCnt / _operationTotalCnt;
+                    if (evaRate >= 0.666f)
+                        evaluation = "优";
+                    else if (evaRate >= 0.333f)
+                        evaluation = "良";
+                    else
+                        evaluation = "差";
+
+                    ScreenUI.InfoPanelText.text = string.Format(_infoText,
+                        100f * hoedCnt / blockDatas.Length,
+                        100f * coveredCnt / blockDatas.Length, evaluation);
+                }
+        */
         protected override void Update()
         {
             base.Update();
@@ -169,6 +259,11 @@ namespace AniYa.UI
             {
                 playTime -= Time.deltaTime;
                 timeText.text = $"{playTime:0}秒";
+
+
+                ScreenUI.TimeSlider.value = playTime / totalTime;
+
+                //RefreshInfo();
 
                 if (playTime <= 0)
                 {
@@ -204,14 +299,14 @@ namespace AniYa.UI
             isPlayingAnimation = true;
             yield return null;
 
-            var sp = NormalSp[GameManager.Instance.UsingGameData.plantIndex];
+            //var sp = NormalSp[GameManager.Instance.UsingGameData.plantIndex];
             if (CurSeedlikngType == SeedlingTypeEnum.Normal)
             {
-                if (_normalIndex < SeedlingImgs.Length)
+                if (_normalIndex < SeedlingObjs.Length)
                 {
-                    var seedImg = SeedlingImgs[_normalIndex];
+                    var seedImg = SeedlingObjs[_normalIndex];
                     seedImg.gameObject.SetActive(true);
-                    seedImg.sprite = sp;
+                    //seedImg.sprite = sp;
                     seedImg.transform.localScale = Vector3.one * 0.25f;
                     seedImg.transform.DOScale(1, 1.4f).SetEase(Ease.OutElastic, 1.2f);
                 }
@@ -340,6 +435,11 @@ namespace AniYa.UI
         public override void Finish(bool quit = false)
         {
             base.Finish(quit);
+
+            PlantParentObj.SetActive(false);
+
+            StopCoroutine("CorShowTalk");
+            GameManager.Instance.CloseTalk();
 
             score = Mathf.RoundToInt(Mathf.Lerp(10, 60, 1f * score / maxScore));
             GameManager.Instance.UsingGameData.scoreSelectSeedlings = score;

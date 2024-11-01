@@ -15,7 +15,8 @@ namespace AniYa.UI
         {
             晴天,
             干旱,
-            阴天
+            //阴天,
+            雨天,
         }
 
         public Transform[] blockTranses;
@@ -114,15 +115,18 @@ namespace AniYa.UI
         public override void StartPlay()
         {
             base.StartPlay();
+            GameManager.Instance.StopRain();
 
-            SetWeather(WeatherTypeEnum.晴天);
+            _weatherIdx = 0;
+            SetWeather(WeatherTypeEnum.雨天);
             skillCnt = 3;//技能只能用3次
             playTime = totalTime;
 
-            weatherChangeCD = weatherChangeTime;
+            //weatherChangeCD = weatherChangeTime;
             skillCntText.text = skillCnt.ToString();
 
             GameManager.Instance.ShowUnitPlants(false);
+
 
             var punits = GameManager.Instance.plantUnits;
             for (int i = 0; i < punits.Length; i++)
@@ -130,6 +134,37 @@ namespace AniYa.UI
                 var pu = punits[i];
                 pu.PlayShakeRotate();
             }
+            StopCoroutine("CorShowTalk");
+            StartCoroutine("CorShowTalk");
+        }
+
+        private IEnumerator CorShowTalk()
+        {
+            ScreenUI.PlayRoleAnimation();
+
+            var talkText = "天民田园通过水肥一体化智能灌溉系统给植物浇水，浇水时，要考虑气温、土壤温度和相对湿度等因素";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？早晨和傍晚是较为理想的浇水时间，避免在正午阳光强烈时浇水。";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？土壤表面出现干燥迹象时再进行浇水，避免过度浇水导致根部窒息。";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？现代农业常选择喷淋法或渗灌法，保证水分均匀地覆盖到植物根部周围";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "要记得根据天气情况，灵活选择浇水时间哦";
+            GameManager.Instance.ShowTalk(talkText);
+
         }
 
         //机械化喷灌
@@ -149,20 +184,54 @@ namespace AniYa.UI
             CurrWeatherType = weatherType;
 
             if (CurrWeatherType == WeatherTypeEnum.晴天)
+            {
                 discreaseSpeed = 1f;
+                weatherChangeCD = 30f;
+            }
             else if (CurrWeatherType == WeatherTypeEnum.干旱)
+            {
                 discreaseSpeed = 2;
+                weatherChangeCD = 15f;
+            }
             else
-                discreaseSpeed = 0.1f;
+            {
+                discreaseSpeed = 0.2f;
+                weatherChangeCD = 15f;
+            }
+
+            if (CurrWeatherType == WeatherTypeEnum.雨天)
+                GameManager.Instance.PlayRain();
+            else
+                GameManager.Instance.StopRain();
 
             //设置天气显示效果
             weatherText.text = CurrWeatherType.ToString();
         }
 
-        private void RandomWeather()
+        /*private void RandomWeather()
         {
-            var widx = Random.Range(0, 3);
+            var widx = Random.Range(0, 2);
             SetWeather((WeatherTypeEnum)widx);
+        }*/
+
+        private WeatherTypeEnum[] _weatherQueue = new WeatherTypeEnum[] {
+            WeatherTypeEnum.雨天,
+            WeatherTypeEnum.晴天,
+            WeatherTypeEnum.干旱,
+            WeatherTypeEnum.雨天,
+            WeatherTypeEnum.晴天,
+            WeatherTypeEnum.干旱,
+            WeatherTypeEnum.雨天,
+            WeatherTypeEnum.晴天,
+            WeatherTypeEnum.干旱,
+            WeatherTypeEnum.雨天,
+        };
+
+        private int _weatherIdx;
+        private void NextWeather()
+        {
+            _weatherIdx++;
+            SetWeather(_weatherQueue[_weatherIdx]);
         }
 
         private void WateringOn(int index)
@@ -229,6 +298,68 @@ namespace AniYa.UI
             WateringOn(index);
         }
 
+
+        private string _infoText = @"剩余时间
+
+作物生长状态   {0}
+环境湿度   {1}
+土壤含水量   {2:0.}%
+当前评价    {3}";
+
+        private float _refreshInfoTime;
+
+        private void RefreshInfo()
+        {
+            _refreshInfoTime += Time.deltaTime;
+            if (_refreshInfoTime < 0.1f)
+            {
+                return;
+            }
+            var growRate = 0f;
+            var rate = 0f;
+            for (int i = 0; i < blockWaterDatas.Length; i++)
+            {
+                var bwd = blockWaterDatas[i];
+                growRate += bwd.growTime / totalTime;
+                rate += bwd.rate;
+            }
+            rate /= blockWaterDatas.Length;
+
+
+            var evaluation = string.Empty;
+            var evaRate = rate;
+
+            if (evaRate >= 0.666f)
+                evaluation = "优";
+            else if (evaRate >= 0.333f)
+                evaluation = "良";
+            else
+                evaluation = "差";
+
+            var growthText = string.Empty;//（良好，一般，缓慢）
+            if (growRate >= 0.666f)
+                growthText = "良好";
+            else if (evaRate >= 0.333f)
+                growthText = "一般";
+            else
+                growthText = "缓慢";
+
+
+            var wetnessText = string.Empty;//（根据天气产生变化，雨天-高，阴天-中，晴天-低）
+            if (CurrWeatherType == WeatherTypeEnum.干旱)
+                wetnessText = "低";
+            else if (CurrWeatherType == WeatherTypeEnum.晴天)
+                wetnessText = "中";
+            //else if (CurrWeatherType == WeatherTypeEnum.阴天)
+            //    wetnessText = "中";
+            else if (CurrWeatherType == WeatherTypeEnum.雨天)
+                wetnessText = "高";
+            ScreenUI.InfoPanelText.text = string.Format(_infoText,
+                growthText, wetnessText, rate * 100, evaluation);
+        }
+
+
+
         protected override void Update()
         {
             base.Update();
@@ -240,7 +371,9 @@ namespace AniYa.UI
                     _growUpCountTime -= 8;
                     var growUpIdx = _growUpIndexes.RandomPick(1)[0];
                     GameManager.Instance.ShowUnitPlant(growUpIdx, true);
+
                     var pu = GameManager.Instance.plantUnits[growUpIdx];
+                    pu.PlayChangeEffect();
                     pu.PlayScaleMotion();
                 }
 
@@ -248,8 +381,9 @@ namespace AniYa.UI
                 weatherChangeCD -= Time.deltaTime;
                 if (weatherChangeCD <= 0)
                 {
-                    weatherChangeCD = weatherChangeTime;
-                    RandomWeather();
+                    NextWeather();
+                    //weatherChangeCD = weatherChangeTime;
+                    //RandomWeather();
                 }
 
                 for (int i = 0; i < blockWaterDatas.Length; i++)
@@ -266,6 +400,10 @@ namespace AniYa.UI
                 }
 
                 playTime -= Time.deltaTime;
+
+                ScreenUI.TimeSlider.value = playTime / totalTime;
+                RefreshInfo();
+
                 timeText.text = $"{playTime:0}秒";
                 if (playTime <= 0)
                 {
@@ -279,6 +417,9 @@ namespace AniYa.UI
         public override void Finish(bool quit = false)
         {
             base.Finish(quit);
+            StopCoroutine("CorShowTalk");
+            GameManager.Instance.CloseTalk();
+
             if (!quit)
             {
                 var sum = 0f;
@@ -296,6 +437,8 @@ namespace AniYa.UI
                 scoreText.text = score.ToString();
                 GameManager.Instance.SaveGame();
             }
+
+            GameManager.Instance.StopRain();
         }
 
 

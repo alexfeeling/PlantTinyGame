@@ -46,6 +46,7 @@ namespace AniYa.UI
                 fruitArr[i] = 0;
 
             playTime = totalTime;
+            _missCnt = 0;
             skillCntText.text = skillCnt.ToString();
 
             GameManager.Instance.ShowUnitPlants();
@@ -71,6 +72,39 @@ namespace AniYa.UI
             }
 
             GenerateFruit();
+
+            RefreshInfo();
+
+            StopCoroutine("CorShowTalk");
+            StartCoroutine("CorShowTalk");
+        }
+
+
+        private IEnumerator CorShowTalk()
+        {
+            ScreenUI.PlayRoleAnimation();
+            var talkText = "天民田园每个季节都有至少四种农作物可以采收，丰收时节瓜果飘香，口齿生津。你知道吗？不同的作物成熟时间也不同，在一年四季中，不同的季节，收获方式也不一样哦";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "稻谷成熟笑脸开，麦穗儿重心欢扬。瓜果红艳田间秀，农民喜笑高歌响";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？大部分农作物在成熟时，果实的外观都会发生显著的变化。最常见的就是颜色变黄或者变红";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？大部分粮食在收获后进行处理，在低温和干燥的环境下进行存储，再运输到农贸市场哦";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "加油加油，马上就可以品尝丰盛的果实了哦！";
+            GameManager.Instance.ShowTalk(talkText);
 
         }
 
@@ -158,6 +192,7 @@ namespace AniYa.UI
             ScoreBarText2.text = "x " + score;
 
             generateCD = 0f;
+
         }
 
         private float generateCD = 0f;
@@ -221,6 +256,41 @@ namespace AniYa.UI
             StartCoroutine(PickFruit(index));
         }
 
+
+        private string _infoText = @"剩余时间
+
+采收数量   {0}
+遗漏数量   {1}
+当前评价    {2}";
+
+        private int _missCnt;
+        private float _refreshInfoTime;
+
+        private void RefreshInfo()
+        {
+            _refreshInfoTime += Time.deltaTime;
+            if (_refreshInfoTime < 0.1f)
+            {
+                return;
+            }
+
+            var evaluation = string.Empty;
+            var evaRate = 0f;
+            if (maxScore <= 0)
+                evaRate = 0.5f;
+            else
+                evaRate = 1f * score / maxScore;
+            if (evaRate >= 0.666f)
+                evaluation = "优";
+            else if (evaRate >= 0.333f)
+                evaluation = "良";
+            else
+                evaluation = "差";
+
+            ScreenUI.InfoPanelText.text = string.Format(_infoText,
+                score, _missCnt, evaluation);
+        }
+
         protected override void Update()
         {
             base.Update();
@@ -230,6 +300,10 @@ namespace AniYa.UI
 
                 playTime -= Time.deltaTime;
                 timeText.text = $"{playTime:0}秒";
+                
+                RefreshInfo();
+
+                ScreenUI.TimeSlider.value = playTime / totalTime;
 
                 if (playTime <= 0f)
                 {
@@ -318,6 +392,12 @@ namespace AniYa.UI
             }
             else
             {
+                for (int i = 0; i < fruitArr.Length; i++)
+                {
+                    if (fruitArr[i] > 0)
+                        _missCnt++;
+                }
+
                 GenerateFruit();
             }
         }
@@ -325,6 +405,8 @@ namespace AniYa.UI
         public override void Finish(bool quit = false)
         {
             base.Finish(quit);
+            StopCoroutine("CorShowTalk");
+            GameManager.Instance.CloseTalk();
             if (!quit)
             {
                 generateCD = 0;

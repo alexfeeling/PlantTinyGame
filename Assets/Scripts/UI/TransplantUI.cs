@@ -101,6 +101,8 @@ namespace AniYa.UI
                 default:
                     break;
             }
+
+            _operationTotalCnt++;
             ShowError();
         }
 
@@ -143,6 +145,8 @@ namespace AniYa.UI
                     return;
             }
             GameManager.Instance.plantUnits[index].PlayScaleMotion();
+
+            _operationCorrectCnt++;
         }
 
         private IEnumerator CorPlayAnimation_Hoe(int index)
@@ -163,6 +167,8 @@ namespace AniYa.UI
                 GameManager.Instance.ShowUnitHoedUncover(index);
             }
 
+            GameManager.Instance.plantUnits[index].PlayChangeEffect();
+
             isPlayingAnimation = false;
 
         }
@@ -178,6 +184,8 @@ namespace AniYa.UI
             isPlayingAnimation = false;
 
             GameManager.Instance.ShowUnitPlantUncover(index);
+
+            GameManager.Instance.plantUnits[index].PlayChangeEffect();
         }
 
         private IEnumerator CorPlayAnimation_Filling(int index)
@@ -190,6 +198,8 @@ namespace AniYa.UI
             isPlayingAnimation = false;
 
             GameManager.Instance.ShowUnitPlant(index, false);
+
+            GameManager.Instance.plantUnits[index].PlayChangeEffect();
 
             for (int i = 0; i < blockDatas.Length; i++)
             {
@@ -213,6 +223,8 @@ namespace AniYa.UI
 
             isPlayingAnimation = false;
 
+            GameManager.Instance.plantUnits[index].PlayStarEffect();
+
             GameManager.Instance.ShowUnitHoedUncover(index);
         }
 
@@ -234,12 +246,105 @@ namespace AniYa.UI
 
             playTime = gameTime;
 
+            _operationTotalCnt = 0;
+            _operationCorrectCnt = 0;
+
             CurrOperationType = OperationTypeEnum.None;
 
             ErrorCG.gameObject.SetActive(false);
 
             GameManager.Instance.ShowUnitEmpty();
+
+            RefreshInfo();
+
+            StopCoroutine("CorShowTalk");
+            StartCoroutine("CorShowTalk");
         }
+
+
+
+        private IEnumerator CorShowTalk()
+        {
+            ScreenUI.PlayRoleAnimation();
+            var talkText = "天民田园把选用的优质种苗从育苗床移栽到农田中，移栽之前，要准备好包括铁锨、水桶、剪刀、苗圃土、肥料等工具哦";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？季和秋季是最佳移栽时间，气温适宜，有利于植物生根和发育";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "移栽的方法和步骤都会影响成活率，所以一定要按步骤进行移栽哦";
+            GameManager.Instance.ShowTalk(talkText);
+            
+            yield return new WaitForSeconds(20f);
+
+            talkText = "移栽后的养护管理也很重要，移栽后需注意浇水、施肥、修剪等养护措施哦";
+            GameManager.Instance.ShowTalk(talkText);
+            
+            yield return new WaitForSeconds(20f);
+
+            talkText = "移栽完成后，就可以看着我们的小树苗健康成长啦";
+            GameManager.Instance.ShowTalk(talkText);
+
+        }
+
+
+
+
+        private string _infoText = @"剩余时间
+
+田块平整度   {0:0.}%
+移栽完成度   {1:0.}%
+当前评价    {2}";
+
+        private int _operationCorrectCnt;
+        private int _operationTotalCnt;
+        private float _refreshInfoTime;
+
+        private void RefreshInfo()
+        {
+            _refreshInfoTime += Time.deltaTime;
+            if (_refreshInfoTime < 0.1f)
+            {
+                return;
+            }
+
+            var hoedCnt = 0;
+            var coveredCnt = 0;
+            for (int i = 0; i < blockDatas.Length; i++)
+            {
+                var bd = blockDatas[i];
+                if (bd.phase >= BlockPhase.Hoed)
+                {
+                    hoedCnt++;
+                }
+                if (bd.phase >= BlockPhase.Coverd)
+                {
+                    coveredCnt++;
+                }
+            }
+
+            var evaluation = string.Empty;
+            var evaRate = 0f;
+            if (_operationTotalCnt <= 0)
+                evaRate = 0.5f;
+            else
+                evaRate = 1f * _operationCorrectCnt / _operationTotalCnt;
+            if (evaRate >= 0.666f)
+                evaluation = "优";
+            else if (evaRate >= 0.333f)
+                evaluation = "良";
+            else
+                evaluation = "差";
+
+            ScreenUI.InfoPanelText.text = string.Format(_infoText,
+                100f * hoedCnt / blockDatas.Length,
+                100f * coveredCnt / blockDatas.Length, evaluation);
+        }
+
 
         protected override void Update()
         {
@@ -248,6 +353,10 @@ namespace AniYa.UI
             {
                 playTime -= Time.deltaTime;
                 timeText.text = $"{playTime:0}秒";
+
+                ScreenUI.TimeSlider.value = playTime / gameTime;
+
+                RefreshInfo();
 
                 if (playTime <= 0)
                 {
@@ -265,6 +374,9 @@ namespace AniYa.UI
         public override void Finish(bool quit = false)
         {
             base.Finish(quit);
+
+            StopCoroutine("CorShowTalk");
+            GameManager.Instance.CloseTalk();
 
             if (!quit)
             {

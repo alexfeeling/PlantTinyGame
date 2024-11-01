@@ -8,6 +8,9 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System;
+using UnityEngine.UI;
+using TMPro;
+using Febucci.UI;
 
 namespace AniYa
 {
@@ -30,6 +33,8 @@ namespace AniYa
         public Camera OperationCamera;
         public Camera ScreenCamera;
 
+        public Animator ScreenAC;
+
         public GamePhaseEnum GamePhase;
 
         public GameData UsingGameData;
@@ -44,12 +49,18 @@ namespace AniYa
         public LoginUI loginUI;
         public LoginScreenUI loginScreenUI;
 
+        public GameObject talkUI;
+        public TextMeshProUGUI talkText;
+        public TextAnimator_TMP talkTA;
+
         public GameObject panelStart;
 
         public GameObject BoyAnimation;
         public GameObject GirlAnimation;
 
         public PlantUnit[] plantUnits;
+
+        public GameObject RainEffect;
 
         public BaseOperationUI GetOperationUI(GamePhaseEnum phase)
         {
@@ -95,6 +106,16 @@ namespace AniYa
             GirlAnimation.SetActive(false);
         }
 
+        public void PlayScreenCameraMoveForward()
+        {
+            ScreenAC.SetInteger("MoveType", 1);
+        }
+        
+        public void PlayScreenCameraMoveToPlant()
+        {
+            ScreenAC.SetInteger("MoveType", 2);
+        }
+
         public void RefreshUnitPlant(int plantIdx = -1, bool isGrowth = true)
         {
             if (plantIdx < 0)
@@ -103,6 +124,9 @@ namespace AniYa
             {
                 var pu = plantUnits[i];
                 pu.ShowPlant(plantIdx, isGrowth);
+                pu.StopManuringAnimation();
+                pu.StopWateringAnimation();
+                pu.StopShakeRotate();
             }
         }
 
@@ -167,6 +191,16 @@ namespace AniYa
             loginScreenUI.gameObject.SetActive(false);
 
             GetOperationUI(GamePhase).ShowStart();
+        }
+
+        public void PlayRain()
+        {
+            RainEffect.SetActive(true);
+        }
+
+        public void StopRain()
+        {
+            RainEffect.SetActive(false);
         }
 
         public void StartBreeding()
@@ -299,9 +333,20 @@ namespace AniYa
         {
 
             var pu = plantUnits[index];
-            pu.clearUnitWeed();
+            pu.ClearUnitWeed();
         }
 
+        public void ShowTalk(string text)
+        {
+            talkUI.SetActive(true);
+            talkText.text = text;
+        }
+
+        public void CloseTalk()
+        {
+            talkUI.SetActive(false);
+            StopRoleAnimation();
+        }
 
         public void SaveGame()
         {

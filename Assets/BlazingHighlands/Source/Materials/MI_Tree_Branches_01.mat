@@ -140,3 +140,4 @@ Material:
     - _LeavesSunsideColor: {r: 0.23137257, g: 0.45098042, b: 0.20000002, a: 1}
     - _TopColor: {r: 0.23137257, g: 0.45098042, b: 0.20000002, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

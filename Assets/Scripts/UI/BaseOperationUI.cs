@@ -30,7 +30,7 @@ namespace AniYa.UI
             ScreenUI.PanelPlay.SetActive(false);
             ScreenUI.PanelFinish.SetActive(false);
 
-            ScreenUI.PlayRoleAnimation();
+            //ScreenUI.PlayRoleAnimation();
         }
 
         public virtual void StartPlay()

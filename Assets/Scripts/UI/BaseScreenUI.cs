@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AniYa.UI
 {
@@ -15,6 +16,8 @@ namespace AniYa.UI
         public GameObject PanelStart;
         public GameObject PanelPlay;
         public GameObject PanelFinish;
+        public Slider TimeSlider;
+        public Text InfoPanelText;
 
         public enum RoleAnimTypeEnum
         {

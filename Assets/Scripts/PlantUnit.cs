@@ -24,6 +24,9 @@ namespace AniYa
         public Animator WateringAnimator;
         public Animator ManuringAnimator;
 
+        public GameObject ChangeEffect;
+        public GameObject StarEffect;
+
         public GameObject[] ManuringEffects;
 
         public bool IsPlayingAnimation;
@@ -58,6 +61,30 @@ namespace AniYa
         {
             Plant.transform.DOKill();
             Plant.transform.localRotation = Quaternion.identity;
+        }
+
+        public void PlayChangeEffect()
+        {
+            if (ChangeEffect.activeSelf)
+            {
+                var ps = ChangeEffect.GetComponent<ParticleSystem>();
+                ps.Stop();
+                ps.Play();
+            }
+            else
+                ChangeEffect.SetActive(true);
+        }
+
+        public void PlayStarEffect()
+        {
+            if (StarEffect.activeSelf)
+            {
+                var ps = StarEffect.GetComponent<ParticleSystem>();
+                ps.Stop();
+                ps.Play();
+            }
+            else
+                StarEffect.SetActive(true);
         }
 
         public void SetScale(float scale, bool animate = false)
@@ -115,6 +142,7 @@ namespace AniYa
             Fruit.SetActive(false);
             Insect.SetActive(false);
             Weed.SetActive(false);
+
         }
 
         public void ShowHoedUncover()
@@ -127,6 +155,7 @@ namespace AniYa
             Fruit.SetActive(false);
             Insect.SetActive(false);
             Weed.SetActive(false);
+
         }
 
         public void ShowRock()
@@ -139,6 +168,7 @@ namespace AniYa
             Fruit.SetActive(false);
             Insect.SetActive(false);
             Weed.SetActive(false);
+
         }
 
         public void ShowUnitInsect()
@@ -151,6 +181,7 @@ namespace AniYa
             Fruit.SetActive(false);
             Insect.SetActive(true);
             Weed.SetActive(false);
+
         }
 
         public void ShowUnitWeed()
@@ -170,7 +201,7 @@ namespace AniYa
             Insect.SetActive(false);
         }
 
-        public void clearUnitWeed()
+        public void ClearUnitWeed()
         {
             Weed.SetActive(false);
         }
@@ -191,6 +222,7 @@ namespace AniYa
                 child.DOKill();
                 child.localPosition = Vector3.zero;
                 child.DOLocalMoveY(20, 0.4f).SetEase(Ease.OutCubic).SetLoops(-1, LoopType.Yoyo);
+
             }
             else if (fruitId == 2)
             {
@@ -202,7 +234,9 @@ namespace AniYa
                 child.DOKill();
                 child.localPosition = Vector3.zero;
                 child.DOLocalMoveY(15, 0.3f).SetEase(Ease.OutCubic).SetLoops(-1, LoopType.Yoyo);
+
             }
+
         }
 
         public void PlayWateringAnimation()
@@ -241,6 +275,7 @@ namespace AniYa
 
         public void PlayScaleMotion()
         {
+            Debug.Log("PlayScaleMotion:" + index);
             transform.localScale = Vector3.one;
             transform.DOKill();
             //transform.DOScale(1, 1).SetEase(Ease.OutElastic, 1.2f);

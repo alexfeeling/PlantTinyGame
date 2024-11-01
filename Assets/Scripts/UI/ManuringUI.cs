@@ -65,6 +65,7 @@ namespace AniYa.UI
 
         private List<int> _growUpIndexes;
         private float _growUpCountTime = 0;
+        private PlantUnit[] _selectUnits;
 
         public override void StartPlay()
         {
@@ -86,16 +87,52 @@ namespace AniYa.UI
             }
 
             playTime = totalTime;
+            _operationCnt = 0;
+            RefreshInfo();
 
             GameManager.Instance.ShowUnitPlants(false);
 
             var punits = GameManager.Instance.plantUnits;
+            _selectUnits = new PlantUnit[punits.Length];
             for (int i = 0; i < punits.Length; i++)
             {
                 var pu = punits[i];
+                _selectUnits[i] = pu;
                 pu.SetScale(1f);
                 pu.PlayShakeRotate();
             }
+
+            StopCoroutine("CorShowTalk");
+            StartCoroutine("CorShowTalk");
+        }
+
+
+        private IEnumerator CorShowTalk()
+        {
+            ScreenUI.PlayRoleAnimation();
+            var talkText = "天民田园在植物生长过程中通过水肥一体化系统对植物施肥，选择合适的肥料种类很重要。根据作物对不同养分的需求，应当选择适合作物需要的肥料";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？氮肥有助于提高植物的蛋白质合成能力哦";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？磷肥有助于促进植物根系生长哦";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？钾肥可以提高植株的抗逆性，增强植物的光合作用";
+            GameManager.Instance.ShowTalk(talkText);
+
+            yield return new WaitForSeconds(20f);
+
+            talkText = "你知道吗？复合肥的营养元素种类较多，能充分发挥营养元素间相互促进的作用，保证作物养分平衡";
+            GameManager.Instance.ShowTalk(talkText);
+
         }
 
 
@@ -103,7 +140,7 @@ namespace AniYa.UI
         {
             if (isPlayingAnimation) return;
             GameManager.Instance.PlayButtonSound();
-
+            _operationCnt++;
             StartCoroutine(CorPlayManuring((ManuringTypeEnum)typeInt));
         }
 
@@ -114,7 +151,7 @@ namespace AniYa.UI
 
             yield return null;
 
-            var pUnits = GameManager.Instance.plantUnits.RandomSelect(3);
+            var pUnits = _selectUnits.RandomSelect(3);
 
             for (int i = 0; i < pUnits.Length; i++)
             {
@@ -147,6 +184,7 @@ namespace AniYa.UI
             }
             if (isPlaying && !isPlayingAnimation)
             {
+                _operationCnt++;
                 StartCoroutine(CorPlaySkill());
             }
         }
@@ -184,6 +222,47 @@ namespace AniYa.UI
             isPlayingAnimation = false;
         }
 
+
+
+
+        private string _infoText = @"剩余时间
+
+作物生长状态   {0:0.}%
+肥料满足度   {1:0.}%
+施肥次数   {2}
+当前评价    {3}";
+
+        private float _refreshInfoTime;
+        private int _operationCnt;
+
+        private void RefreshInfo()
+        {
+            _refreshInfoTime += Time.deltaTime;
+            if (_refreshInfoTime < 0.1f)
+            {
+                return;
+            }
+
+            var totalRate = 0f;
+            for (int i = 0; i < manuringDatas.Length; i++)
+            {
+                totalRate += manuringDatas[i].rate;
+            }
+            totalRate /= manuringDatas.Length;
+
+            var evaluation = string.Empty;
+            var evaRate = totalRate;
+
+            if (evaRate >= 0.666f)
+                evaluation = "优";
+            else if (evaRate >= 0.333f)
+                evaluation = "良";
+            else
+                evaluation = "差";
+
+            ScreenUI.InfoPanelText.text = string.Format(_infoText,
+                100f * growRate / totalTime, totalRate, _operationCnt, evaluation);
+        }
         protected override void Update()
         {
             base.Update();
@@ -197,6 +276,7 @@ namespace AniYa.UI
                     var growUpIdx = _growUpIndexes.RandomPick(1)[0];
                     var pu = GameManager.Instance.plantUnits[growUpIdx];
                     pu.SetScale(1.4f, true);
+                    pu.PlayChangeEffect();
                 }
 
                 var isLowValue = false;
@@ -221,6 +301,11 @@ namespace AniYa.UI
                     skillCD -= Time.deltaTime;
 
                 playTime -= Time.deltaTime;
+
+                ScreenUI.TimeSlider.value = playTime / totalTime;
+
+                RefreshInfo();
+
                 if (playTime < 0)
                     playTime = 0;
                 timeText.text = $"{playTime:0}秒";
@@ -243,6 +328,9 @@ namespace AniYa.UI
         public override void Finish(bool quit = false)
         {
             base.Finish(quit);
+            StopCoroutine("CorShowTalk");
+            GameManager.Instance.CloseTalk();
+
             if (!quit)
             {
                 var score = Mathf.RoundToInt(Mathf.Lerp(10, 60, growRate / totalTime));
