@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a31fb5ea39e5c64498fe822a82c999e, type: 3}
+  m_Name: ReturnToEarthConfig
+  m_EditorClassIdentifier: 
+  StartMusic: {fileID: 0}
+  PlayMusic: {fileID: 8300000, guid: 99d40490244dd3f408ebc55207674453, type: 3}
+  MapWidth: 40
+  MapDelay: 0.5
+  MapSpeed: 5
+  MapDistance: 500
+  DistancePerTime: 62.5
+  ObstacleOffset: 3
+  SpaceshipGravity: 0.7
+  SpaceshipClimb: 4
+  SpaceshipFlyIn: 3
+  LandingPosition: -5
+  LandingTime: 5
+  Maps:
+  - {fileID: 11400000, guid: 376ac50ece607734f91f717d0bce3372, type: 2}
+  - {fileID: 11400000, guid: 60579a34787d29840a8b6b55ad65b733, type: 2}
+  - {fileID: 11400000, guid: 8292c9de0ebfc7e4e8a41a3ce01a96c6, type: 2}
+  - {fileID: 11400000, guid: 8e1e0cf89c48f324ab4507336babd055, type: 2}
+  - {fileID: 11400000, guid: 4e42d57be1445944db62013e3b91d4e9, type: 2}
+  - {fileID: 11400000, guid: 7b11cfd8b1f7fb748b796104433f3378, type: 2}
+  - {fileID: 11400000, guid: a55cadf177e1c6043bbadb7f16b8297c, type: 2}
+  - {fileID: 11400000, guid: 97f0a1ca57342bf4aa160b2ef70203eb, type: 2}
+  - {fileID: 11400000, guid: 6c6c2cdacaa36c44088dd549afcd14ca, type: 2}
+  - {fileID: 11400000, guid: ae995f45d34be224382b74a308afbf11, type: 2}
+  - {fileID: 11400000, guid: 123d42eecd9331642ba35014053551bf, type: 2}

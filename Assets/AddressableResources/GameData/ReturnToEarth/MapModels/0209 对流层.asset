@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dcb03700e98a474fa1c2c2678430abd, type: 3}
+  m_Name: "0209 \u5BF9\u6D41\u5C42"
+  m_EditorClassIdentifier: 
+  Id: 0209
+  Name: "\u5BF9\u6D41\u5C42"
+  MapType: 1
+  MapInfo: "\u5BF9\u6D41\u5C42"
+  MapAsset:
+    m_AssetGUID: 66335c675e9efba4582a74fab4811383
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  ObstacleAsset:
+    m_AssetGUID: ad3d24d254cc0ca4db59e2b6850abed0
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  LoopTimes: 1
+  NumberOfObstacles: 5
+  GapOfObsoletes: 2
