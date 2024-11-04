@@ -20,6 +20,11 @@ MonoBehaviour:
   - m_GUID: ca630b88c09abe84889e48d114f05308
     m_Address: Assets/AddressableResources/Transplanting
     m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b5f5bea2609f6942aa77ffecaef4b8f
+    m_Address: Assets/AddressableResources/Transplanting/Scene/ScnTransplanting.unity
+    m_ReadOnly: 0
     m_SerializedLabels:
     - Transplanting
     FlaggedDuringContentUpdateRestriction: 0

@@ -26,7 +26,7 @@ public class ScrSmpleScene : ScrSceneBase
             AsyncOperationHandle<SceneInstance>? asyncOperation = scene switch
             {
                 Scenes.ReturnToEarth => ScnReturnToEarth.LoadSceneAsync(),
-                Scenes.SeedBreeding => ScnSeedBreeding.LoadSceneAsync(),
+                Scenes.SeedBreeding => Addressables.LoadSceneAsync("SeedBreeding"),
                 Scenes.JumpAndGrow => ScnJumpAndGrow.LoadSceneAsync(),
                 Scenes.Transplanting => ScnTransplanting.LoadSceneAsync(),
                 _ => null,

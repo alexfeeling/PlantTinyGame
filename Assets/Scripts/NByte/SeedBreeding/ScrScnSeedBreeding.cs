@@ -47,10 +47,10 @@ namespace NByte.SeedBreeding
                 {
                     switch (t.ChessmanType)
                     {
-                        case ChessmanModel.ChessmanTypes.Red: PagePlaySecondary.ProgressRed = t.Progress; Debug.Log($"R:{t.Progress}"); break;
-                        case ChessmanModel.ChessmanTypes.Green: PagePlaySecondary.ProgressGreen = t.Progress; Debug.Log($"G:{t.Progress}"); break;
-                        case ChessmanModel.ChessmanTypes.Blue: PagePlaySecondary.ProgressBlue = t.Progress; Debug.Log($"B:{t.Progress}"); break;
-                        case ChessmanModel.ChessmanTypes.Yellow: PagePlaySecondary.ProgressYellow = t.Progress; Debug.Log($"Y:{t.Progress}"); break;
+                        case ChessmanModel.ChessmanTypes.Red: PagePlaySecondary.ProgressRed = t.Progress; break;
+                        case ChessmanModel.ChessmanTypes.Green: PagePlaySecondary.ProgressGreen = t.Progress; break;
+                        case ChessmanModel.ChessmanTypes.Blue: PagePlaySecondary.ProgressBlue = t.Progress; break;
+                        case ChessmanModel.ChessmanTypes.Yellow: PagePlaySecondary.ProgressYellow = t.Progress; break;
                         default: break;
                     }
                 });
@@ -151,6 +151,7 @@ namespace NByte.SeedBreeding
             IEnumerator Steps()
             {
                 yield return AppService.ShowCurtain();
+                Chessboard.Clear();
                 PageFinishMain.gameObject.SetActive(false);
                 PagePlaySecondary.gameObject.SetActive(false);
                 PageTitleMain.gameObject.SetActive(true);

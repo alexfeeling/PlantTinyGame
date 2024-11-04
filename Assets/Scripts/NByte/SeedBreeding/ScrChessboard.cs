@@ -44,7 +44,6 @@ namespace NByte.SeedBreeding
             int[,] indexes;
             while (true)
             {
-                //todo clear chessmen
                 indexes = RandomIndexes();
                 if (CheckIndexes(indexes))
                 {
@@ -146,6 +145,12 @@ namespace NByte.SeedBreeding
                 }
                 yield return new WaitForSeconds(Config.CreateChessmanInterval);
             }
+        }
+
+        public void Clear()
+        {
+            EnabledChessmen.ForEach(t => Destroy(t.gameObject));
+            EnabledChessmen.Clear();
         }
 
         public Vector3 GetChessmanPosition(int row, int column)

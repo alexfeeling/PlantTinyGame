@@ -20,6 +20,11 @@ MonoBehaviour:
   - m_GUID: 4078773e80336054387c095b874ee785
     m_Address: Assets/AddressableResources/JumpAndGrow
     m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 784886b8cfd47cb4d85c4960fedf9235
+    m_Address: Assets/AddressableResources/JumpAndGrow/Scene/ScnJumpAndGrow.unity
+    m_ReadOnly: 0
     m_SerializedLabels:
     - JumpAndGrow
     FlaggedDuringContentUpdateRestriction: 0

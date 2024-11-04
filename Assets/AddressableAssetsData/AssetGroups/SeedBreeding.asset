@@ -20,6 +20,11 @@ MonoBehaviour:
   - m_GUID: 3c85aec47d73da84cbf565a9c16df28f
     m_Address: Assets/AddressableResources/SeedBreeding
     m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef21944051146aa49bf6db0fe2b39b25
+    m_Address: Assets/AddressableResources/SeedBreeding/Scene/ScnSeedBreeding.unity
+    m_ReadOnly: 0
     m_SerializedLabels:
     - SeedBreeding
     FlaggedDuringContentUpdateRestriction: 0

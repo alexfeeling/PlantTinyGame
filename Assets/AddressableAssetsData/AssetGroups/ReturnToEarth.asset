@@ -20,6 +20,11 @@ MonoBehaviour:
   - m_GUID: d1bb8dd690bae6940b4747572f4a0f54
     m_Address: Assets/AddressableResources/ReturnToEarth
     m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d3b77fd8c22b934499b6c41d0202b7c9
+    m_Address: Assets/AddressableResources/ReturnToEarth/Scene/ScnReturnToEarth.unity
+    m_ReadOnly: 0
     m_SerializedLabels:
     - ReturnToEarth
     FlaggedDuringContentUpdateRestriction: 0
