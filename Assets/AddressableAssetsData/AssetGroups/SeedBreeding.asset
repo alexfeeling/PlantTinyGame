@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SeedBreeding
+  m_EditorClassIdentifier: 
+  m_GroupName: SeedBreeding
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 3e7390aea98d27a45905acf0af75ea9e
+  m_SerializeEntries:
+  - m_GUID: 3c85aec47d73da84cbf565a9c16df28f
+    m_Address: Assets/AddressableResources/SeedBreeding
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef21944051146aa49bf6db0fe2b39b25
+    m_Address: Assets/AddressableResources/SeedBreeding/Scene/ScnSeedBreeding.unity
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - SeedBreeding
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 378000e67df3a7f42b26dcbd17ad85e9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: f743c0384237b1945b56bca92b83438b, type: 2}
+    - {fileID: 11400000, guid: 5d46a61999656284ea2023b9371e5871, type: 2}
