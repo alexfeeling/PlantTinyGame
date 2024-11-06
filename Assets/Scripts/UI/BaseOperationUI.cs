@@ -50,6 +50,14 @@ namespace AniYa.UI
 
         }
 
+        /// <summary>
+        ///  运行特殊游戏
+        /// </summary>
+        public virtual void PlaySpecialGame()
+        {
+            GameManager.Instance.OpenSpecialGame();
+        }
+
         private void OnEnable()
         {
             ScreenUI.gameObject.SetActive(true);

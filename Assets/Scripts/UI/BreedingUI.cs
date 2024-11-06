@@ -78,7 +78,8 @@ namespace AniYa.UI
 
         public override void StartPlay()
         {
-            base.StartPlay();
+            GameManager.Instance.OpenGameForBreedingNormal();
+            /*base.StartPlay();
 
             if (mediaPlayer == null)
             {
@@ -99,7 +100,7 @@ namespace AniYa.UI
             {
                 var pu = punits[i];
                 pu.StopShakeRotate();
-            }
+            }*/
         }
 
         #region VLC

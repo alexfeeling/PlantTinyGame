@@ -11,23 +11,23 @@ using System;
 using UnityEngine.UI;
 using TMPro;
 using Febucci.UI;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace AniYa
 {
-
-
     public class GameManager : MonoBehaviour
     {
-
         public enum GamePhaseEnum
         {
-            Breeding,       //育种
-            SelectSeedlings,//选苗
-            Transplant,     //移栽
-            Manuring,       //施肥
-            Watering,       //浇水
-            Disinsection,   //除草除虫
-            Harvest,        //收获
+            Breeding, //育种
+            SelectSeedlings, //选苗
+            Transplant, //移栽
+            Manuring, //施肥
+            Watering, //浇水
+            Disinsection, //除草除虫
+            Harvest, //收获
         }
 
         public Camera OperationCamera;
@@ -83,10 +83,13 @@ namespace AniYa
                 default:
                     break;
             }
+
             return null;
         }
 
         public static GameManager Instance;
+
+        public static string CacheStartParam;
 
         public void PlayBoyAnimation()
         {
@@ -110,7 +113,7 @@ namespace AniYa
         {
             ScreenAC.SetInteger("MoveType", 1);
         }
-        
+
         public void PlayScreenCameraMoveToPlant()
         {
             ScreenAC.SetInteger("MoveType", 2);
@@ -137,7 +140,6 @@ namespace AniYa
 
         private void Start()
         {
-
             Instance = this;
 
             UsingGameData = new GameData();
@@ -154,6 +156,19 @@ namespace AniYa
             StopRoleAnimation();
 
             Screen.fullScreen = false;
+
+            if (CacheStartParam != null)
+            {
+                switch (CacheStartParam)
+                {
+                    case "ScnSeedBreeding":
+                    case "ScnReturnToEarth":
+                        StartBreeding();
+                        break;
+                }
+
+                CacheStartParam = null;
+            }
         }
 
         public void ShowEnter()
@@ -331,7 +346,6 @@ namespace AniYa
 
         public void ClearUnitWeed(int index)
         {
-
             var pu = plantUnits[index];
             pu.ClearUnitWeed();
         }
@@ -360,7 +374,7 @@ namespace AniYa
         {
             var gameData = UsingGameData;
             gameData.gameId = (int)GamePhase + 1;
-            var gameId = 1;// (int)GamePhase + 1;
+            var gameId = 1; // (int)GamePhase + 1;
             var score = gameData.GetScore(GamePhase);
             var url = $"http://124.222.207.138:8888/Game/IDCard/Finish?UserId={gameData.playerId}&GameId={gameId}";
             var gameDataJson = JsonConvert.SerializeObject(gameData, Formatting.None);
@@ -433,19 +447,47 @@ namespace AniYa
             }
         }
 
+        // 打开特别游戏
+        public void OpenSpecialGame()
+        {
+            StartCoroutine(CorOpenSpecialGame());
+        }
+
+        private IEnumerator CorOpenSpecialGame()
+        {
+            var sceneName = GamePhase switch
+            {
+                GamePhaseEnum.Breeding => "ReturnToEarth",//"SeedBreeding",
+                GamePhaseEnum.SelectSeedlings => "",
+                GamePhaseEnum.Transplant => "",
+                GamePhaseEnum.Manuring => "",
+                GamePhaseEnum.Watering => "",
+                GamePhaseEnum.Disinsection => "",
+                GamePhaseEnum.Harvest => "",
+                _ => string.Empty
+            };
+            AsyncOperationHandle<SceneInstance>? asyncOperation = Addressables.LoadSceneAsync(sceneName);
+            yield return asyncOperation;
+        }
+
+        public void OpenGameForBreedingNormal()
+        {
+            StartCoroutine(CorOpenGameForBreedingNormal());
+        }
+
+        private IEnumerator CorOpenGameForBreedingNormal()
+        {
+            AsyncOperationHandle<SceneInstance>? asyncOperation = Addressables.LoadSceneAsync("SeedBreeding");
+            yield return asyncOperation;
+        }
 
         #region 播放音效
 
-        [SerializeField]
-        private AudioSource _audioSrc;
-        [SerializeField]
-        private AudioClip _buttonSound;
-        [SerializeField]
-        private AudioClip _touchSound;
-        [SerializeField]
-        private AudioClip _errorSound;
-        [SerializeField]
-        private AudioClip _correctSound;
+        [SerializeField] private AudioSource _audioSrc;
+        [SerializeField] private AudioClip _buttonSound;
+        [SerializeField] private AudioClip _touchSound;
+        [SerializeField] private AudioClip _errorSound;
+        [SerializeField] private AudioClip _correctSound;
 
         public void PlayButtonSound()
         {
@@ -464,7 +506,7 @@ namespace AniYa
             _audioSrc.clip = _errorSound;
             _audioSrc.Play();
         }
-        
+
         public void PlayCorrectSound()
         {
             _audioSrc.clip = _correctSound;
@@ -500,7 +542,5 @@ namespace AniYa
                     return string.Empty;
             }
         }
-
     }
-
 }

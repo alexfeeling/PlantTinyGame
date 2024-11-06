@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using AniYa;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace NByte
 {
@@ -13,7 +16,10 @@ namespace NByte
 
         public static void LoadStartScene(string from)
         {
-
+            Debug.Log("LoadStartScene: " + from);
+            GameManager.CacheStartParam = from;
+            SceneManager.LoadScene("StartScene", LoadSceneMode.Single);
         }
+        
     }
 }
