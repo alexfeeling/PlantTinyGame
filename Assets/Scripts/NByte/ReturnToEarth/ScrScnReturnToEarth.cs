@@ -130,6 +130,10 @@ namespace NByte.ReturnToEarth
             PageLoseMain.gameObject.SetActive(true);
             PageLoseSecondary.gameObject.SetActive(true);
         }
+        public void Return()
+        {
+            AppTools.LoadStartScene("ScnReturnToEarth");
+        }
 
         protected override void Start()
         {

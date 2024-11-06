@@ -24,7 +24,7 @@ MonoBehaviour:
   SpaceshipClimb: 4
   SpaceshipFlyIn: 3
   LandingPosition: -5
-  LandingTime: 5
+  LandingTime: 3
   Maps:
   - {fileID: 11400000, guid: 376ac50ece607734f91f717d0bce3372, type: 2}
   - {fileID: 11400000, guid: 60579a34787d29840a8b6b55ad65b733, type: 2}

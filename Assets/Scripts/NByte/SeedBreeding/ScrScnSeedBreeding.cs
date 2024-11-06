@@ -159,6 +159,10 @@ namespace NByte.SeedBreeding
                 yield return AppService.HideCurtain();
             }
         }
+        public void Return()
+        {
+            AppTools.LoadStartScene("ScnSeedBreeding");
+        }
 
         protected override void Start()
         {
