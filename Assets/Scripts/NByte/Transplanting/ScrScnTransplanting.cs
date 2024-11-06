@@ -11,29 +11,11 @@ namespace NByte.Transplanting
         private static TransplantingConfig Config => AppService.Transplanting.Config;
 
         [SerializeField] private Transform FieldsRoot;
-        [SerializeField] private ScrPageTitleMain PageTitleMain;
 
-        private int blocks;
-        private int Blocks
-        {
-            get => blocks;
-            set
-            {
-                blocks = Mathf.Clamp(value, 0, Config.LandSize.x * Config.LandSize.y);
-                PageTitleMain.Blocks = Blocks;
-            }
-        }
-
-        private List<ScrField> Fields { get; set; } = new();
-
-        public void IncreaseBlocks()
-        {
-            Blocks++;
-        }
-        public void DecreaseBlocks()
-        {
-            Blocks--;
-        }
+        public int Difficulty { get; set; }
+        public int Progress { get; set; }
+        private List<ScrField> Fields { get; set; }        
+        public Stack<ScrField> RoutePoints { get; set; } = new();
 
         public void StartGame()
         {
@@ -41,33 +23,48 @@ namespace NByte.Transplanting
 
             IEnumerator Steps()
             {
-                ClearFields();
-                List<FieldValue> fieldValues;
-                int timer = 1;
+                yield return AppService.ShowCurtain();
+                AppService.PlayMusic(Config.Music);
+                Difficulty = 1;
+                Progress = 1;
+                yield return AppService.HideCurtain();
+                StartTransplanting();
+            }
+        }
+        public void StopGame()
+        {
+            StartCoroutine(Steps());
+
+            IEnumerator Steps()
+            {
+                yield return AppService.ShowCurtain();
+                AppService.StopMusic();
+                Fields.ForEach(t => Destroy(t.gameObject));
+                Fields.Clear();
+                yield return AppService.HideCurtain();
+            }
+        }
+
+        public void StartTransplanting()
+        {
+            StartCoroutine(Steps());
+
+            IEnumerator Steps()
+            {
+                List<FieldValue> fieldValues = BuildFieldValues();                
                 while (true)
                 {
-                    fieldValues = RandomFieldValues();
-                    if (CheckFieldValues(fieldValues.Single(t => t.Row == 0 && t.Column == 0), fieldValues.Where(t => !t.IsBlocked)))
+                    RandomObstacles(fieldValues);
+                    if (CheckFieldValues(fieldValues.Single(t => t.Row == 0 && t.Column == 0), fieldValues.Where(t => !t.IsObstacle)))
                     {
-                        Debug.Log($"Fields Successfully Created After {timer} Times.");
-                        break;
-                    }
-                    timer++;
-                    if (timer >= 100)
-                    {
-                        Debug.Log("Can't Create Fields. Try Again.");
                         break;
                     }
                 }
-                yield return CreateFields(fieldValues.Where(t => !t.IsBlocked).OrderByDescending(t => t.Step));
+                yield return CreateFields(fieldValues);
+                //add start point
             }
         }
-        private void ClearFields()
-        {
-            Fields.ForEach(t => Destroy(t.gameObject));
-            Fields.Clear();
-        }
-        private List<FieldValue> RandomFieldValues()
+        private List<FieldValue> BuildFieldValues()
         {
             List<FieldValue> fieldValues = new();
             for (int i = 0; i < Config.LandSize.y; i++)
@@ -77,20 +74,22 @@ namespace NByte.Transplanting
                     fieldValues.Add(new(i, j));
                 }
             }
-            FieldValue start = fieldValues.Single(t => t.Row == 0 && t.Column == 0);
-            fieldValues.Remove(start);
-            for (int i = 0; i < Blocks; i++)
-            {
-                fieldValues.Where(t => !t.IsBlocked).Random().IsBlocked = true;
-            }
-            fieldValues.Add(start);
+            fieldValues.Single(t => t.Row == 0 && t.Column == 0).IsOrigin = true;
             return fieldValues;
         }
-        private bool CheckFieldValues(FieldValue currentField, IEnumerable<FieldValue> unreachedFields)
+        private void RandomObstacles(List<FieldValue> fieldValues)
         {
-            List<FieldValue> enabledFields = new(unreachedFields);
+            fieldValues.ForEach(t => t.IsObstacle = false);
+            for (int i = 0; i < Config.ObstaclesMin + Difficulty - 1; i++)
+            {
+                fieldValues.Where(t => !t.IsOrigin && !t.IsObstacle).Random().IsObstacle = true;
+            }
+        }
+        private bool CheckFieldValues(FieldValue currentField, IEnumerable<FieldValue> fieldValues)
+        {
+            List<FieldValue> enabledFields = new(fieldValues);
             enabledFields.Remove(currentField);
-            currentField.Step = enabledFields.Count;
+            currentField.RouteIndex = enabledFields.Count;
             List<FieldValue> nearbyFields = new();
             AddNearbyField(0, 1);
             AddNearbyField(0, -1);
@@ -109,7 +108,7 @@ namespace NByte.Transplanting
             }
             else
             {
-                return enabledFields.Count() == 0;
+                return enabledFields.Count == 0;
             }
 
             void AddNearbyField(int rowOffset = 0, int columnOffset = 0)
@@ -122,32 +121,29 @@ namespace NByte.Transplanting
                 }
             }
         }
-        private IEnumerator CreateFields(IEnumerable<FieldValue> fieldValues)
+        private IEnumerator CreateFields(List<FieldValue> fieldValues)
         {
             Vector3 origin = new(-(Config.LandSize.x - 1) / 2 * Config.FieldSpacing, -(Config.LandSize.y - 1) / 2 * Config.FieldSpacing);
-            for (int i = 0; i < fieldValues.Count(); i++)
+            for (int i = 0; i < fieldValues.Count; i++)
             {
-                FieldValue fieldValue = fieldValues.ElementAt(i);
+                FieldValue fieldValue = fieldValues[i];
                 Vector3 position = origin + new Vector3(fieldValue.Column * Config.FieldSpacing, fieldValue.Row * Config.FieldSpacing);
                 AsyncOperationHandle<GameObject> asyncOperation = Config.FieldAsset.InstantiateAsync(position, Quaternion.identity, FieldsRoot);
                 yield return asyncOperation;
                 ScrField field = asyncOperation.Result.GetComponent<ScrField>();
-                field.Init(fieldValue, fieldValues.ElementAtOrDefault(i + 1));
+                field.Init(fieldValue);
                 Fields.Add(field);
             }
+        }
+        public void StopTransplanting()
+        {
+            //clear fields and route points
         }
 
         protected override void Start()
         {
             base.Start();
-            StartCoroutine(Steps());
-
-            IEnumerator Steps()
-            {
-                Blocks = 0;
-                yield return AppService.HideCurtain();
-            }
+            AppService.HideCurtain();
         }
     }
 }
-

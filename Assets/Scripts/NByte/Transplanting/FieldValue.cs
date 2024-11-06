@@ -4,8 +4,9 @@ namespace NByte.Transplanting
     {
         public int Row { get; set; }
         public int Column { get; set; }
-        public bool IsBlocked { get; set; }
-        public int Step { get; set; }
+        public bool IsObstacle { get; set; }
+        public bool IsOrigin { get; set; }
+        public int? RouteIndex { get; set; }
 
         public FieldValue(int row, int column)
         {

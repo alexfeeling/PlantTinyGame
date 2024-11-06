@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c4c2e4aaecb42540967413e4e939346, type: 3}
   m_Name: TransplantingConfig
   m_EditorClassIdentifier: 
-  LandSize: {x: 5, y: 5}
+  Music: {fileID: 0}
+  LandSize: {x: 10, y: 7}
   FieldAsset:
-    m_AssetGUID: 4814156ae1326b24799afd22dc4b4b00
+    m_AssetGUID: 8d24252b4da692043af1c56378d4fef6
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   FieldSpacing: 1
+  ObstaclesMin: 2
+  DifficultySteps: 5

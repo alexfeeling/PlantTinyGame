@@ -10,5 +10,10 @@ namespace NByte
             int index = UnityEngine.Random.Range(0, values.Count());
             return values.ElementAt(index);
         }
+
+        public static void LoadStartScene(string from)
+        {
+
+        }
     }
 }
