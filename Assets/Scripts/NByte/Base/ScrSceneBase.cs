@@ -9,11 +9,11 @@ namespace NByte
 
         protected virtual void Awake()
         {
-            AppService.AwakeState = true;
+            AppService.BootOnAwake();
         }
         protected virtual void Start()
         {
-            AppService.StartState = true;
+            AppService.BootOnStart();
         }
     }
 }

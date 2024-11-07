@@ -132,7 +132,7 @@ namespace NByte.ReturnToEarth
         }
         public void Return()
         {
-            AppTools.LoadStartScene("ScnReturnToEarth");
+            StartCoroutine(AppService.LoadStartScene(AniYa.GameManager.GamePhaseEnum.Breeding));
         }
 
         protected override void Start()

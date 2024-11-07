@@ -7,40 +7,26 @@ namespace NByte
     {
         public static AppService Instance { get; private set; }
 
-        private static bool awakeState;
-        public static bool AwakeState
+        private static bool BootStateOnAwake { get; set; }
+        public static void BootOnAwake()
         {
-            get => awakeState;
-            set
+            if (!BootStateOnAwake)
             {
-                if (awakeState != value)
-                {
-                    awakeState = value;
-                    if (awakeState)
-                    {
-                        GameObject obj = Addressables.InstantiateAsync("AppService").WaitForCompletion();
-                        Instance = obj.GetComponent<AppService>();
-                        DontDestroyOnLoad(obj);
-                        Instance.AwakeProcess();
-                    }
-                }
+                BootStateOnAwake = true;
+                GameObject obj = Addressables.InstantiateAsync("AppService").WaitForCompletion();
+                Instance = obj.GetComponent<AppService>();
+                DontDestroyOnLoad(obj);
+                Instance.AwakeProcess();
             }
         }
 
-        private static bool startState;
-        public static bool StartState
+        private static bool BootStateOnStart { get; set; }
+        public static void BootOnStart()
         {
-            get => startState;
-            set
+            if (!BootStateOnStart)
             {
-                if (startState != value)
-                {
-                    startState = value;
-                    if (startState)
-                    {
-                        Instance.StartProcess();
-                    }
-                }
+                BootStateOnStart = true;
+                Instance.StartProcess();
             }
         }
 

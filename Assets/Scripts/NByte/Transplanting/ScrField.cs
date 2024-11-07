@@ -3,17 +3,19 @@ using UnityEngine.EventSystems;
 
 namespace NByte.Transplanting
 {
-    public class ScrField : MonoBehaviour, IPointerEnterHandler
+    public class ScrField : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private GameObject Grass;
         [SerializeField] private GameObject Obstacle;
         [SerializeField] private GameObject Seedling;
         [SerializeField] private GameObject Start;
 
+        public ScrScnTransplanting ScnTransplanting { get; private set; }
         public FieldValue FieldValue { get; private set; }
 
-        public void Init(FieldValue fieldValue)
+        public void Init(ScrScnTransplanting scnTransplanting, FieldValue fieldValue)
         {
+            ScnTransplanting = scnTransplanting;
             FieldValue = fieldValue;
             Load();
         }
@@ -32,9 +34,26 @@ namespace NByte.Transplanting
             Seedling.SetActive(false);
         }
 
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (ScnTransplanting != null && ScnTransplanting.GameState)
+            {
+                ScnTransplanting.SetRoute(this);
+            }
+        }
         public void OnPointerEnter(PointerEventData eventData)
         {
-            throw new System.NotImplementedException();
+            if (ScnTransplanting != null && ScnTransplanting.IsPlanning)
+            {
+                ScnTransplanting.SetRoute(this);
+            }
+        }
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            //if (ScnTransplanting != null && ScnTransplanting.IsPlanning)
+            //{
+            //    Debug.Log($"Exit On {gameObject.name}");
+            //}
         }
     }
 }

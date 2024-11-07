@@ -12,5 +12,8 @@ namespace NByte.Transplanting
         public float FieldSpacing = 1;
         public int ObstaclesMin = 2;
         public int DifficultySteps = 5;
+        public AssetReferenceGameObject CompleteAsset;
+        public AudioClip CompleteSound;
+        public float CompleteDelay = 2;
     }
 }
