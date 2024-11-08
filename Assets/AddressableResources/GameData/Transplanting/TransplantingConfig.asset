@@ -19,13 +19,15 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  FieldSpacing: 1
+  FieldSpacing: 1.3
   ObstaclesMin: 1
+  DifficultyMax: 5
   DifficultySteps: 3
+  DriveSpeed: 0.2
   CompleteAsset:
     m_AssetGUID: c51e34914bd18ff4880b11005334182e
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   CompleteSound: {fileID: 8300000, guid: 9fb2085538d1bfe41abcb2b5c317517f, type: 3}
-  CompleteDelay: 2
+  CompleteDelay: 0.5
