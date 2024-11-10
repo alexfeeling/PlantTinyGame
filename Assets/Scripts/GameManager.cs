@@ -163,6 +163,7 @@ namespace AniYa
                 {
                     case "ScnSeedBreeding":
                     case "ScnReturnToEarth":
+                    case "Breeding":
                         StartBreeding();
                         break;
                 }

@@ -13,13 +13,6 @@ namespace NByte
             int index = UnityEngine.Random.Range(0, values.Count());
             return values.ElementAt(index);
         }
-
-        public static void LoadStartScene(string from)
-        {
-            Debug.Log("LoadStartScene: " + from);
-            GameManager.CacheStartParam = from;
-            SceneManager.LoadScene("StartScene", LoadSceneMode.Single);
-        }
         
     }
 }

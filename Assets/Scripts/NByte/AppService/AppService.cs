@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -15,9 +16,15 @@ namespace NByte
                 BootStateOnAwake = true;
                 GameObject obj = Addressables.InstantiateAsync("AppService").WaitForCompletion();
                 Instance = obj.GetComponent<AppService>();
-                DontDestroyOnLoad(obj);
+                // DontDestroyOnLoad(obj);
                 Instance.AwakeProcess();
             }
+        }
+
+        private void OnDestroy()
+        {
+            Instance = null;
+            BootStateOnAwake = false;
         }
 
         private static bool BootStateOnStart { get; set; }

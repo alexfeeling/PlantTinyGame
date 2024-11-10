@@ -1,4 +1,6 @@
 using System.Collections;
+using AniYa;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 
@@ -9,14 +11,15 @@ namespace NByte
         public IEnumerator LoadStartScene(AniYa.GameManager.GamePhaseEnum gamePhase)
         {
             yield return ShowCurtain();
-            yield return SceneManager.LoadSceneAsync("StartScene");
             GamePhaseHandler(gamePhase);
-            yield return HideCurtain();
+            yield return SceneManager.LoadSceneAsync("StartScene");
+            // yield return HideCurtain();
         }
         private void GamePhaseHandler(AniYa.GameManager.GamePhaseEnum gamePhase)
         {
-            //todo complete the handler
-            //GameManager gameManager = FindObjectOfType<GameManager>();
+            // Debug.Log("LoadStartScene: " + gamePhase.ToString());
+            GameManager.CacheStartParam = gamePhase.ToString();
+            SceneManager.LoadScene("StartScene", LoadSceneMode.Single);
         }
 
         public IEnumerator LoadScnReturnToEarth()
