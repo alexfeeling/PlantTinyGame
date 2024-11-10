@@ -12,13 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c4c2e4aaecb42540967413e4e939346, type: 3}
   m_Name: TransplantingConfig
   m_EditorClassIdentifier: 
-  Music: {fileID: 0}
-  LandSize: {x: 10, y: 7}
+  Music: {fileID: 8300000, guid: 562bc2c6c7323da48871904dfe05a7ec, type: 3}
+  LandSize: {x: 5, y: 5}
   FieldAsset:
     m_AssetGUID: 8d24252b4da692043af1c56378d4fef6
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  FieldSpacing: 1
-  ObstaclesMin: 2
-  DifficultySteps: 5
+  FieldSpacing: 1.3
+  ObstaclesMin: 1
+  DifficultyMax: 5
+  DifficultySteps: 3
+  DriveSpeed: 0.2
+  CompleteAsset:
+    m_AssetGUID: c51e34914bd18ff4880b11005334182e
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  CompleteSound: {fileID: 8300000, guid: 9fb2085538d1bfe41abcb2b5c317517f, type: 3}
+  CompleteDelay: 0.5

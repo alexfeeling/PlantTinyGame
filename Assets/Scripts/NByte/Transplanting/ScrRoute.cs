@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace NByte.Transplanting
@@ -6,6 +8,22 @@ namespace NByte.Transplanting
     public class ScrRoute : MonoBehaviour
     {
         [SerializeField] private LineRenderer Line;
+
+        public List<ScrField> RoutePoints
+        {
+            set
+            {
+                if (value == null)
+                {
+                    Line.positionCount = 0;
+                }
+                else
+                {
+                    Line.positionCount = value.Count;
+                    Line.SetPositions(value.Select(t => t.transform.position).ToArray());
+                }
+            }
+        }
 
         private void Start()
         {

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cde1a35f7837d8449b487826b281fb7b
+guid: b70caca7fd17fae48854bea03628fa95
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -95,28 +95,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: TexRoute_0
-      rect:
-        serializedVersion: 2
-        x: 16
-        y: 0
-        width: 65
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ddf1cc9cb7f9bb2468731db1bc483915
-      internalID: 720274279
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -127,8 +106,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      TexRoute_0: 720274279
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

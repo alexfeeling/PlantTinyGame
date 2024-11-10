@@ -1044,26 +1044,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5873c7eed0f8cb446a5514b1623e84ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ScnReturnToEarth:
-    m_AssetGUID: d3b77fd8c22b934499b6c41d0202b7c9
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  ScnSeedBreeding:
-    m_AssetGUID: ef21944051146aa49bf6db0fe2b39b25
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  ScnJumpAndGrow:
-    m_AssetGUID: 784886b8cfd47cb4d85c4960fedf9235
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  ScnTransplanting:
-    m_AssetGUID: 7b5f5bea2609f6942aa77ffecaef4b8f
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
 --- !u!4 &542226712
 Transform:
   m_ObjectHideFlags: 0

@@ -161,7 +161,7 @@ namespace NByte.SeedBreeding
         }
         public void Return()
         {
-            AppTools.LoadStartScene("ScnSeedBreeding");
+            StartCoroutine(AppService.LoadStartScene(AniYa.GameManager.GamePhaseEnum.Breeding));
         }
 
         protected override void Start()
