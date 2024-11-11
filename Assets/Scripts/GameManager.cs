@@ -1,24 +1,21 @@
+using AniYa.UI;
+using Febucci.UI;
+using NByte;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using AniYa.UI;
-using Newtonsoft.Json;
-using UnityEngine.Networking;
-using Newtonsoft.Json.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System;
-using UnityEngine.UI;
 using TMPro;
-using Febucci.UI;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine;
+using UnityEngine.Networking;
 
 namespace AniYa
 {
     public class GameManager : MonoBehaviour
     {
+        private static AppService AppService => AppService.Instance;
+
         public enum GamePhaseEnum
         {
             Breeding, //育种
@@ -138,8 +135,14 @@ namespace AniYa
             Application.Quit();
         }
 
+        private void Awake()
+        {
+            AppService.BootOnAwake();
+        }
         private void Start()
         {
+            AppService.BootOnStart();
+
             Instance = this;
 
             UsingGameData = new GameData();
@@ -170,6 +173,8 @@ namespace AniYa
 
                 CacheStartParam = null;
             }
+
+            AppService.HideCurtain();
         }
 
         public void ShowEnter()
@@ -456,19 +461,37 @@ namespace AniYa
 
         private IEnumerator CorOpenSpecialGame()
         {
-            var sceneName = GamePhase switch
+            switch (GamePhase)
             {
-                GamePhaseEnum.Breeding => "ReturnToEarth",//"SeedBreeding",
-                GamePhaseEnum.SelectSeedlings => "",
-                GamePhaseEnum.Transplant => "",
-                GamePhaseEnum.Manuring => "",
-                GamePhaseEnum.Watering => "",
-                GamePhaseEnum.Disinsection => "",
-                GamePhaseEnum.Harvest => "",
-                _ => string.Empty
-            };
-            AsyncOperationHandle<SceneInstance>? asyncOperation = Addressables.LoadSceneAsync(sceneName);
-            yield return asyncOperation;
+                case GamePhaseEnum.Breeding: yield return AppService.LoadScnReturnToEarth(); break;
+                case GamePhaseEnum.SelectSeedlings:
+                    break;
+                case GamePhaseEnum.Transplant:
+                    break;
+                case GamePhaseEnum.Manuring:
+                    break;
+                case GamePhaseEnum.Watering:
+                    break;
+                case GamePhaseEnum.Disinsection:
+                    break;
+                case GamePhaseEnum.Harvest:
+                    break;
+                default:
+                    break;
+            }
+            //var sceneName = GamePhase switch
+            //{
+            //    GamePhaseEnum.Breeding => "ReturnToEarth",//"SeedBreeding",
+            //    GamePhaseEnum.SelectSeedlings => "",
+            //    GamePhaseEnum.Transplant => "",
+            //    GamePhaseEnum.Manuring => "",
+            //    GamePhaseEnum.Watering => "",
+            //    GamePhaseEnum.Disinsection => "",
+            //    GamePhaseEnum.Harvest => "",
+            //    _ => string.Empty
+            //};
+            //AsyncOperationHandle<SceneInstance>? asyncOperation = Addressables.LoadSceneAsync(sceneName);
+            //yield return asyncOperation;
         }
 
         public void OpenGameForBreedingNormal()
@@ -478,8 +501,9 @@ namespace AniYa
 
         private IEnumerator CorOpenGameForBreedingNormal()
         {
-            AsyncOperationHandle<SceneInstance>? asyncOperation = Addressables.LoadSceneAsync("SeedBreeding");
-            yield return asyncOperation;
+            yield return AppService.LoadScnSeedBreeding();
+            //AsyncOperationHandle<SceneInstance>? asyncOperation = Addressables.LoadSceneAsync("SeedBreeding");
+            //yield return asyncOperation;
         }
 
         #region 播放音效
