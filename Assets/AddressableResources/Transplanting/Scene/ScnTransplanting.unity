@@ -1568,8 +1568,8 @@ MonoBehaviour:
   PageTutorialSecondary: {fileID: 1204600849}
   PagePlayMain: {fileID: 226095221}
   PagePlaySecondary: {fileID: 628654882}
-  PageFinishMain: {fileID: 0}
-  PageFinishSecondary: {fileID: 0}
+  PageFinishMain: {fileID: 418367935}
+  PageFinishSecondary: {fileID: 995447168}
 --- !u!1 &334323365
 GameObject:
   m_ObjectHideFlags: 0
@@ -7953,7 +7953,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1673817395}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 325684974}
+        m_TargetAssemblyTypeName: NByte.Transplanting.ScrScnTransplanting, Assembly-CSharp
+        m_MethodName: StartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1673817395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10098,7 +10110,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2093316227}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 325684974}
+        m_TargetAssemblyTypeName: NByte.Transplanting.ScrScnTransplanting, Assembly-CSharp
+        m_MethodName: StopGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2093316227
 MonoBehaviour:
   m_ObjectHideFlags: 0

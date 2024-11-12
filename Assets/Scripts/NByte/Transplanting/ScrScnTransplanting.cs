@@ -71,6 +71,7 @@ namespace NByte.Transplanting
         public List<ScrField> RoutePoints { get; set; } = new();
         public List<ScrField> RutPoints { get; set; } = new();
         public bool GameState { get; set; }
+        public bool InputState { get; set; }
         public bool IsPlanning { get; set; }
 
         public void StartTutorial()
@@ -92,11 +93,14 @@ namespace NByte.Transplanting
                 PageTutorialSecondary.gameObject.SetActive(false);
                 PagePlayMain.gameObject.SetActive(true);
                 PagePlaySecondary.gameObject.SetActive(true);
+                PageFinishMain.gameObject.SetActive(false);
+                PageFinishSecondary.gameObject.SetActive(false);
                 AppService.PlayMusic(Config.Music);
                 Timer = Config.GameLifeTime;
                 Points = 0;
                 Difficulty = 1;
                 Progress = 1;
+                GameState = true;
                 yield return StartTransplanting();
                 yield return AppService.HideCurtain();
                 StartCoroutine(StartTimer());
@@ -121,9 +125,16 @@ namespace NByte.Transplanting
                 Machine.gameObject.SetActive(false);
                 PageTitleMain.gameObject.SetActive(true);
                 PageTitleSecondary.gameObject.SetActive(true);
+                PageFinishMain.gameObject.SetActive(false);
+                PageFinishSecondary.gameObject.SetActive(false);
                 AppService.StopMusic();
                 Fields.ForEach(t => Destroy(t.gameObject));
                 Fields.Clear();
+                RoutePoints.Clear();
+                Route.RoutePoints = RoutePoints;
+                RutPoints.Clear();
+                Rut.RutPoints = RutPoints;
+                yield return PreviewFields();
                 yield return AppService.HideCurtain();
             }
         }
@@ -134,13 +145,12 @@ namespace NByte.Transplanting
 
         public IEnumerator StartTransplanting()
         {
-            if (Difficulty > Config.DifficultyMax)
-            {
-
-            }
-
             Fields.ForEach(t => Destroy(t.gameObject));
             Fields.Clear();
+            RoutePoints.Clear();
+            Route.RoutePoints = RoutePoints;
+            RutPoints.Clear();
+            Rut.RutPoints = RutPoints;
             List<FieldValue> fieldValues = BuildFieldValues();
             while (true)
             {
@@ -157,7 +167,7 @@ namespace NByte.Transplanting
             Machine.gameObject.SetActive(true);
             Machine.transform.position = field.transform.position;
             Machine.MachineState = ScrMachine.MachineStates.Idle;
-            GameState = true;
+            InputState = true;
         }
         private List<FieldValue> BuildFieldValues()
         {
@@ -227,7 +237,6 @@ namespace NByte.Transplanting
                 ScrField field = asyncOperation.Result.GetComponent<ScrField>();
                 field.Init(this, fieldValue);
                 Fields.Add(field);
-
             }
         }
         public void StopTransplanting()
@@ -236,7 +245,8 @@ namespace NByte.Transplanting
 
             IEnumerator Steps()
             {
-                GameState = false;
+                InputState = false;
+                IsPlanning = false;
                 Route.RoutePoints = null;
                 for (int i = 1; i < RoutePoints.Count; i++)
                 {
@@ -249,12 +259,6 @@ namespace NByte.Transplanting
                 yield return new WaitForSeconds(Config.CompleteDelay);
                 yield return Config.CompleteAsset.InstantiateAsync();
                 AppService.PlaySound(Config.CompleteSound);
-                Fields.ForEach(t => Destroy(t.gameObject));
-                Fields.Clear();
-                RoutePoints.Clear();
-                Route.RoutePoints = RoutePoints;
-                RutPoints.Clear();
-                Rut.RutPoints = RutPoints;
                 Points += Config.PointIncrement;
                 Progress++;
                 if (Progress > Config.DifficultySteps)
@@ -262,7 +266,14 @@ namespace NByte.Transplanting
                     Difficulty++;
                     Progress = 1;
                 }
-                yield return StartTransplanting();
+                if (Difficulty > Config.DifficultyMax)
+                {
+                    Finish();
+                }
+                else
+                {
+                    yield return StartTransplanting();
+                }
             }
         }
 
@@ -321,6 +332,7 @@ namespace NByte.Transplanting
                 PageFinishMain.gameObject.SetActive(true);
                 PageFinishSecondary.gameObject.SetActive(true);
                 GameState = false;
+                InputState = false;
             }
         }
 

@@ -40,7 +40,7 @@ namespace NByte.Transplanting
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (ScnTransplanting != null && ScnTransplanting.GameState)
+            if (ScnTransplanting != null && ScnTransplanting.InputState)
             {
                 ScnTransplanting.SetRoute(this);
             }
