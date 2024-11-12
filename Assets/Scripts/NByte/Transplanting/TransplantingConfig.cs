@@ -12,10 +12,12 @@ namespace NByte.Transplanting
         public float FieldSpacing = 1;
         public int ObstaclesMin = 1;
         public int DifficultyMax = 5;
-        public int DifficultySteps = 1;
+        public int DifficultySteps = 3;
         public float DriveSpeed = 0.2f;
         public AssetReferenceGameObject CompleteAsset;
         public AudioClip CompleteSound;
         public float CompleteDelay = 1;
+        public int PointIncrement = 5;
+        public int GameLifeTime = 120;
     }
 }

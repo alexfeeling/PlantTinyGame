@@ -15,14 +15,71 @@ namespace NByte.Transplanting
         [SerializeField] private ScrRoute Route;
         [SerializeField] private ScrRut Rut;
         [SerializeField] private ScrPageTitleMain PageTitleMain;
+        [SerializeField] private ScrPageTitleSecondary PageTitleSecondary;
+        [SerializeField] private ScrPageTutorialMain PageTutorialMain;
+        [SerializeField] private ScrPageTutorialSecondary PageTutorialSecondary;
+        [SerializeField] private ScrPagePlayMain PagePlayMain;
+        [SerializeField] private ScrPagePlaySecondary PagePlaySecondary;
+        [SerializeField] private ScrPageFinishMain PageFinishMain;
+        [SerializeField] private ScrPageFinishSecondary PageFinishSecondary;
 
-        public int Difficulty { get; set; }
-        public int Progress { get; set; }
+        private int timer;
+        public int Timer
+        {
+            get => timer;
+            set
+            {
+                timer = value;
+                PagePlaySecondary.Timer = value;
+            }
+        }
+
+        private int points;
+        public int Points
+        {
+            get => points;
+            set
+            {
+                points = value;
+                PagePlaySecondary.Points = value;
+            }
+        }
+
+        private int difficulty;
+        public int Difficulty
+        {
+            get => difficulty;
+            set
+            {
+                difficulty = value;
+                PagePlaySecondary.Difficulty = difficulty;
+            }
+        }
+
+        private int progress;
+        public int Progress
+        {
+            get => progress;
+            set
+            {
+                progress = value;
+                PagePlaySecondary.Progress = progress;
+            }
+        }
+
         private List<ScrField> Fields { get; set; } = new();
         public List<ScrField> RoutePoints { get; set; } = new();
         public List<ScrField> RutPoints { get; set; } = new();
         public bool GameState { get; set; }
         public bool IsPlanning { get; set; }
+
+        public void StartTutorial()
+        {
+            PageTitleMain.gameObject.SetActive(false);
+            PageTitleSecondary.gameObject.SetActive(false);
+            PageTutorialMain.gameObject.SetActive(true);
+            PageTutorialSecondary.gameObject.SetActive(true);
+        }
 
         public void StartGame()
         {
@@ -31,13 +88,28 @@ namespace NByte.Transplanting
             IEnumerator Steps()
             {
                 yield return AppService.ShowCurtain();
-                PageTitleMain.gameObject.SetActive(false);
+                PageTutorialMain.gameObject.SetActive(false);
+                PageTutorialSecondary.gameObject.SetActive(false);
+                PagePlayMain.gameObject.SetActive(true);
+                PagePlaySecondary.gameObject.SetActive(true);
                 AppService.PlayMusic(Config.Music);
+                Timer = Config.GameLifeTime;
+                Points = 0;
                 Difficulty = 1;
                 Progress = 1;
+                yield return StartTransplanting();
                 yield return AppService.HideCurtain();
-                StartTransplanting();
+                StartCoroutine(StartTimer());
             }
+        }
+        private IEnumerator StartTimer()
+        {
+            while (Timer > 0)
+            {
+                yield return new WaitForSeconds(1);
+                Timer--;
+            }
+            Finish();
         }
         public void StopGame()
         {
@@ -48,37 +120,44 @@ namespace NByte.Transplanting
                 yield return AppService.ShowCurtain();
                 Machine.gameObject.SetActive(false);
                 PageTitleMain.gameObject.SetActive(true);
+                PageTitleSecondary.gameObject.SetActive(true);
                 AppService.StopMusic();
                 Fields.ForEach(t => Destroy(t.gameObject));
                 Fields.Clear();
                 yield return AppService.HideCurtain();
             }
         }
-
-        public void StartTransplanting()
+        public void Return()
         {
-            StartCoroutine(Steps());
 
-            IEnumerator Steps()
+        }
+
+        public IEnumerator StartTransplanting()
+        {
+            if (Difficulty > Config.DifficultyMax)
             {
-                List<FieldValue> fieldValues = BuildFieldValues();
-                while (true)
-                {
-                    RandomObstacles(fieldValues);
-                    if (CheckFieldValues(fieldValues.Single(t => t.Row == 0 && t.Column == 0), fieldValues.Where(t => !t.IsObstacle)))
-                    {
-                        break;
-                    }
-                }
-                yield return CreateFields(fieldValues);
-                ScrField field = Fields.Single(t => t.FieldValue.IsOrigin);
-                RoutePoints.Add(field);
-                RutPoints.Add(field);
-                Machine.gameObject.SetActive(true);
-                Machine.transform.position = field.transform.position;
-                Machine.MachineState = ScrMachine.MachineStates.Idle;
-                GameState = true;
+
             }
+
+            Fields.ForEach(t => Destroy(t.gameObject));
+            Fields.Clear();
+            List<FieldValue> fieldValues = BuildFieldValues();
+            while (true)
+            {
+                RandomObstacles(fieldValues);
+                if (CheckFieldValues(fieldValues.Single(t => t.Row == 0 && t.Column == 0), fieldValues.Where(t => !t.IsObstacle)))
+                {
+                    break;
+                }
+            }
+            yield return CreateFields(fieldValues);
+            ScrField field = Fields.Single(t => t.FieldValue.IsOrigin);
+            RoutePoints.Add(field);
+            RutPoints.Add(field);
+            Machine.gameObject.SetActive(true);
+            Machine.transform.position = field.transform.position;
+            Machine.MachineState = ScrMachine.MachineStates.Idle;
+            GameState = true;
         }
         private List<FieldValue> BuildFieldValues()
         {
@@ -157,6 +236,7 @@ namespace NByte.Transplanting
 
             IEnumerator Steps()
             {
+                GameState = false;
                 Route.RoutePoints = null;
                 for (int i = 1; i < RoutePoints.Count; i++)
                 {
@@ -175,13 +255,14 @@ namespace NByte.Transplanting
                 Route.RoutePoints = RoutePoints;
                 RutPoints.Clear();
                 Rut.RutPoints = RutPoints;
+                Points += Config.PointIncrement;
                 Progress++;
                 if (Progress > Config.DifficultySteps)
                 {
                     Difficulty++;
                     Progress = 1;
                 }
-                StartTransplanting();
+                yield return StartTransplanting();
             }
         }
 
@@ -217,6 +298,31 @@ namespace NByte.Transplanting
                 }
             }
         }
+        public void ResetRoutes()
+        {
+            RoutePoints.RemoveAll(t => !t.FieldValue.IsOrigin);
+            Route.RoutePoints = RoutePoints;
+        }
+
+        private IEnumerator PreviewFields()
+        {
+            Machine.gameObject.SetActive(false);
+            Difficulty = Random.Range(3, 7);
+            List<FieldValue> fieldValues = BuildFieldValues();
+            RandomObstacles(fieldValues);
+            yield return CreateFields(fieldValues);
+        }
+        private void Finish()
+        {
+            if (GameState)
+            {
+                PagePlayMain.gameObject.SetActive(false);
+                PagePlaySecondary.gameObject.SetActive(false);
+                PageFinishMain.gameObject.SetActive(true);
+                PageFinishSecondary.gameObject.SetActive(true);
+                GameState = false;
+            }
+        }
 
         protected override void Start()
         {
@@ -225,8 +331,17 @@ namespace NByte.Transplanting
 
             IEnumerator Steps()
             {
-                Machine.gameObject.SetActive(false);
                 PageTitleMain.gameObject.SetActive(true);
+                PageTitleSecondary.gameObject.SetActive(true);
+                PageTutorialMain.gameObject.SetActive(false);
+                PageTutorialSecondary.gameObject.SetActive(false);
+                PagePlayMain.gameObject.SetActive(false);
+                PagePlaySecondary.gameObject.SetActive(false);
+                PageFinishMain.Init(this);
+                PageFinishMain.gameObject.SetActive(false);
+                PageFinishSecondary.Init(this);
+                PageFinishSecondary.gameObject.SetActive(false);
+                yield return PreviewFields();
                 yield return AppService.HideCurtain();
             }
         }
